@@ -314,7 +314,7 @@ module.exports = (robot) ->
       buffer = ''
       if schedules.length > 0
         for schedule in schedules
-          buffer += "* #{schedule.name} - https://#{pagerduty.subdomain}.pagerduty.com/schedules##{schedule.id}\n"
+          buffer += "* #{schedule.name} - #{schedule.id}\n"
         msg.send buffer
       else
         msg.send 'No schedules found!'
@@ -550,9 +550,9 @@ module.exports = (robot) ->
       renderSchedule = (s, cb) ->
         withCurrentOncallId msg, s, (oncallUserid, oncallUsername, schedule) ->
           if userId == oncallUserid
-            cb null, "* Yes, you are on call for #{schedule.name} - https://#{pagerduty.subdomain}.pagerduty.com/schedules##{schedule.id}"
+            cb null, "* Yes, you are on call for #{schedule.name} - #{schedule.id}"
           else
-            cb null, "* No, you are NOT on call for #{schedule.name} (but #{oncallUsername} is)- https://#{pagerduty.subdomain}.pagerduty.com/schedules##{schedule.id}"
+            cb null, "* No, you are NOT on call for #{schedule.name} (but #{oncallUsername} is)- #{schedule.id}"
 
       if !userId?
         msg.send "Couldn't figure out the pagerduty user connected to your account."
@@ -581,7 +581,7 @@ module.exports = (robot) ->
     messages = []
     renderSchedule = (s, cb) ->
       withCurrentOncall msg, s, (username, schedule) ->
-        messages.push("* #{username} is on call for #{schedule.name} - https://#{pagerduty.subdomain}.pagerduty.com/schedules##{schedule.id}")
+        messages.push("* #{username} is on call for #{schedule.name} - #{schedule.id}")
         cb null
 
     if scheduleName?
@@ -618,7 +618,7 @@ module.exports = (robot) ->
       services = json.services
       if services.length > 0
         for service in services
-          buffer += "* #{service.id}: #{service.name} (#{service.status}) - https://#{pagerduty.subdomain}.pagerduty.com/services/#{service.id}\n"
+          buffer += "* #{service.id}: #{service.name} (#{service.status}) - #{service.id}\n"
         msg.send buffer
       else
         msg.send 'No services found!'

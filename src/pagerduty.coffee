@@ -1,8 +1,7 @@
 HttpClient = require 'scoped-http-client'
 
 pagerDutyApiKey        = process.env.HUBOT_PAGERDUTY_API_KEY
-pagerDutySubdomain     = process.env.HUBOT_PAGERDUTY_SUBDOMAIN
-pagerDutyBaseUrl       = "https://#{pagerDutySubdomain}.pagerduty.com/api/v1"
+pagerDutyBaseUrl       = "https://api.pagerduty.com"
 pagerDutyServices      = process.env.HUBOT_PAGERDUTY_SERVICES
 pagerNoop              = process.env.HUBOT_PAGERDUTY_NOOP
 pagerNoop               = false if pagerNoop is "false" or pagerNoop  is "off"
@@ -11,13 +10,10 @@ class PagerDutyError extends Error
 module.exports =
   http: (path) ->
     HttpClient.create("#{pagerDutyBaseUrl}#{path}")
-      .headers(Authorization: "Token token=#{pagerDutyApiKey}", Accept: 'application/json')
+      .headers(Authorization: "Token token=#{pagerDutyApiKey}", "Content-type": "application/json", Accept: "application/vnd.pagerduty+json;version=2")
 
   missingEnvironmentForApi: (msg) ->
     missingAnything = false
-    unless pagerDutySubdomain?
-      msg.send "PagerDuty Subdomain is missing:  Ensure that HUBOT_PAGERDUTY_SUBDOMAIN is set."
-      missingAnything |= true
     unless pagerDutyApiKey?
       msg.send "PagerDuty API Key is missing:  Ensure that HUBOT_PAGERDUTY_API_KEY is set."
       missingAnything |= true
@@ -52,7 +48,6 @@ module.exports =
 
     json = JSON.stringify(data)
     @http(url)
-      .header("content-type","application/json")
       .header("content-length",json.length)
       .put(json) (err, res, body) ->
         if err?
@@ -73,7 +68,6 @@ module.exports =
 
     json = JSON.stringify(data)
     @http(url)
-      .header("content-type","application/json")
       .header("content-length",json.length)
       .post(json) (err, res, body) ->
         if err?
@@ -91,7 +85,7 @@ module.exports =
       console.log "Would have DELETE #{url}"
       return
 
-    auth = "Token token=#{pagerDutyApiKey}"
+    # auth = "Token token=#{pagerDutyApiKey}"
     @http(url)
       .header("content-length",0)
       .delete() (err, res, body) ->
@@ -136,5 +130,3 @@ module.exports =
         return
 
       cb(null, json.schedules)
-
-  subdomain: pagerDutySubdomain
